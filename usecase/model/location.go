@@ -1,13 +1,11 @@
 package model
 
-import "time"
-
 type Location struct {
-	Timestamp time.Time `json:"timestamp"`
-	Latitude  float64   `json:"latitude"`
-	Longitude float64   `json:"longitude"`
-	Altitude  float64   `json:"altitude"`
-	Speed     float64   `json:"speed"`
+	Timestamp int64   `json:"timestamp"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Altitude  float64 `json:"altitude"`
+	Speed     float64 `json:"speed"`
 }
 
 // Stream Live Location

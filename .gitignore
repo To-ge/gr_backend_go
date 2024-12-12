@@ -25,3 +25,9 @@ go.work.sum
 .env
 
 .vscode
+
+adapter/grpc/api/gen/
+
+*.log
+
+bin/

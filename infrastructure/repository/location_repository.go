@@ -20,12 +20,12 @@ func NewLocationRepository(dbc *database.DBConnector) domainRepo.ILocationReposi
 	}
 }
 
-func (ur locationRepository) StreamArchiveLocation(span entity.TimeSpan) (entity.LocationChannel, error) {
+func (lr locationRepository) StreamArchiveLocation(span entity.TimeSpan) (entity.LocationChannel, error) {
 	// startTime := unixTimeToTime(span.StartTime)
 	// endTime := unixTimeToTime(span.EndTime)
 	locations := []model.Location{}
 
-	if err := ur.dbc.Conn.Model(model.Location{}).Where("timestamp > ? AND timestamp < ?", span.StartTime, span.EndTime).Find(&locations).Error; err != nil {
+	if err := lr.dbc.Conn.Model(model.Location{}).Where("timestamp > ? AND timestamp < ?", span.StartTime, span.EndTime).Find(&locations).Error; err != nil {
 		return nil, fmt.Errorf("archive location can't find, %s", err.Error())
 	}
 
@@ -38,7 +38,7 @@ func (ur locationRepository) StreamArchiveLocation(span entity.TimeSpan) (entity
 		for _, v := range locations {
 			time.Sleep(1 * time.Second)
 			ch <- entity.Location{
-				Timestamp: v.CreatedAt,
+				Timestamp: v.Timestamp,
 				Latitude:  v.Latitude,
 				Longitude: v.Longitude,
 				Altitude:  v.Altitude,

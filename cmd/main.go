@@ -5,16 +5,25 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/To-ge/gr_backend_go/adapter/grpc"
 	"github.com/To-ge/gr_backend_go/adapter/rest"
 	"github.com/To-ge/gr_backend_go/config"
+	"github.com/To-ge/gr_backend_go/pkg"
+
 	"github.com/joho/godotenv"
 )
 
 func main() {
+	pkg.InitLogger()
 	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
+	if err := grpc.InitRouter(); err != nil {
+		log.Fatalf("Failed to initialize grpc router, %s", err.Error())
+	}
+
 	addr := config.LoadConfig().RestInfo.Address
 	router, err := rest.InitRouter()
 	if err != nil {
@@ -29,8 +38,6 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	// graceful shutdown
-	// https://github.com/gin-gonic/examples/blob/master/graceful-shutdown/graceful-shutdown/notify-without-context/server.go
 	log.Println("server is running! addr: ", addr)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalf("Failed to listen and serve: %+v", err)

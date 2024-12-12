@@ -31,7 +31,7 @@ func (lu *locationUsecase) StreamLiveLocation(*model.StreamLiveLocationInput) (*
 	go func(locCh chan<- model.Location) {
 		defer close(locationChannel)
 		for {
-			location, ok := <-ch
+			location, ok := <-*ch
 
 			if !ok {
 				break

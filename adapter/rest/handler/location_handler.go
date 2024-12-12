@@ -1,4 +1,4 @@
-package rest
+package handler
 
 import (
 	"encoding/json"
@@ -31,7 +31,8 @@ func (lh *locationHandler) StreamLiveLocation() echo.HandlerFunc {
 		}
 
 		// ヘッダーを設定
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextPlainCharsetUTF8)
+		c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+		c.Response().Header().Set(echo.HeaderContentType, "application/json; charset=utf-8")
 		c.Response().Header().Set("Transfer-Encoding", "chunked")
 		c.Response().Header().Set("Cache-Control", "no-cache")
 		c.Response().WriteHeader(http.StatusOK)
@@ -76,6 +77,7 @@ func (lh *locationHandler) StreamArchiveLocation() echo.HandlerFunc {
 		}
 
 		// ヘッダーを設定
+		c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextPlainCharsetUTF8)
 		c.Response().Header().Set("Transfer-Encoding", "chunked")
 		c.Response().Header().Set("Cache-Control", "no-cache")

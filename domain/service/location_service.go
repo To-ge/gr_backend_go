@@ -6,7 +6,7 @@ import (
 )
 
 type ILocationService interface {
-	StreamLiveLocation() (entity.LocationChannel, error)
+	StreamLiveLocation() (*entity.LocationChannel, error)
 	StreamArchiveLocation(entity.TimeSpan) (entity.LocationChannel, error)
 }
 
@@ -20,13 +20,15 @@ func NewLocationService(lr repository.ILocationRepository) ILocationService {
 	}
 }
 
-func (ls *locationService) StreamLiveLocation() (entity.LocationChannel, error) {
-	ch := make(entity.LocationChannel)
+func (ls *locationService) StreamLiveLocation() (*entity.LocationChannel, error) {
+	ch := new(entity.LocationChannel)
+	*ch = make(entity.LocationChannel, 10)
 	locationList := entity.LiveLocationManager.LocationList
 
 	for _, v := range locationList {
-		ch <- v
+		*ch <- v
 	}
+	entity.LiveLocationManager.AddChannel(ch)
 	return ch, nil
 }
 

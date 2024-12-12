@@ -8,7 +8,7 @@ type Location struct {
 	Longitude float64   `gorm:"column:longitude"`
 	Altitude  float64   `gorm:"column:altitude"`
 	Speed     float64   `gorm:"column:speed"`
-	Timestamp uint64    `gorm:"column:timestamp"`
+	Timestamp int64     `gorm:"column:timestamp"`
 	CreatedAt time.Time `gorm:"column:created_at"`
 	UpdatedAt time.Time `gorm:"column:updated_at"`
 }
