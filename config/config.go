@@ -1,13 +1,22 @@
 package config
 
-import "os"
+import (
+	"os"
+	"strconv"
+)
 
 type appConfig struct {
-	RestInfo *RestInfo
-	DBInfo   *DBInfo
+	RestInfo   *RestInfo
+	GrpcInfo   *GrpcInfo
+	DBInfo     *DBInfo
+	DomainInfo *DomainInfo
 }
 
 type RestInfo struct {
+	Address string
+}
+
+type GrpcInfo struct {
 	Address string
 }
 
@@ -19,10 +28,19 @@ type DBInfo struct {
 	DBPort   string
 }
 
+type DomainInfo struct {
+	TimerMinutes int
+}
+
 func LoadConfig() *appConfig {
 	address := ":" + os.Getenv("PUBLIC_PORT")
 
 	restInfo := &RestInfo{
+		Address: address,
+	}
+
+	address = ":" + os.Getenv("PRIVATE_PORT")
+	grpcInfo := &GrpcInfo{
 		Address: address,
 	}
 
@@ -34,9 +52,16 @@ func LoadConfig() *appConfig {
 		DBPort:   os.Getenv("DB_PORT"),
 	}
 
+	i, _ := strconv.Atoi(os.Getenv("TIMER_MINUTES"))
+	domainInfo := &DomainInfo{
+		TimerMinutes: i,
+	}
+
 	appConfig := appConfig{
-		RestInfo: restInfo,
-		DBInfo:   dbInfo,
+		RestInfo:   restInfo,
+		GrpcInfo:   grpcInfo,
+		DBInfo:     dbInfo,
+		DomainInfo: domainInfo,
 	}
 
 	return &appConfig
