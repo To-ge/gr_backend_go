@@ -25,9 +25,9 @@ func main() {
 	fmt.Println("finished loading...")
 
 	address := config.LoadConfig().GrpcInfo.Address
-	fmt.Println("address ", address)
+	fmt.Println("address: ", address)
 	conn, err := grpc.NewClient(
-		fmt.Sprintf("localhost%s", address),
+		address,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -55,7 +55,7 @@ func main() {
 		}
 		stream.Send(message)
 		fmt.Printf("send %d message...\n", i)
-		time.Sleep(1 * time.Second)
+		time.Sleep(2 * time.Second)
 	}
 	res, err := stream.CloseAndRecv()
 	if err != nil {

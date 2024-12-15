@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/To-ge/gr_backend_go/usecase"
@@ -21,6 +22,8 @@ func NewLocationHandler(lu usecase.ILocationUsecase) *locationHandler {
 
 func (lh *locationHandler) StreamLiveLocation() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log.Println("locationHandler.StreamLiveLocation started.")
+		defer log.Println("locationHandler.StreamLiveLocation ended.")
 		var input *model.StreamLiveLocationInput
 		if err := c.Bind(&input); err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid input"})
@@ -50,12 +53,14 @@ func (lh *locationHandler) StreamLiveLocation() echo.HandlerFunc {
 			// JSONエンコード
 			locationJSON, err := json.Marshal(location)
 			if err != nil {
-				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to encode location"})
+				log.Printf("Error encoding location: %v\n", err)
+				continue
 			}
 
 			// 書き込み
 			if _, err := writer.Write(append(locationJSON, '\n')); err != nil {
-				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to write to response"})
+				log.Printf("Error writing to response: %v", err)
+				continue
 			}
 
 			writer.Flush()

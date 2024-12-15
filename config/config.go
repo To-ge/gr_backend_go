@@ -39,7 +39,7 @@ func LoadConfig() *appConfig {
 		Address: address,
 	}
 
-	address = ":" + os.Getenv("PRIVATE_PORT")
+	address = os.Getenv("PRIVATE_HOST")
 	grpcInfo := &GrpcInfo{
 		Address: address,
 	}

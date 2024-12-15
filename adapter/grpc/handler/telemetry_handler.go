@@ -23,6 +23,8 @@ func NewTelemetryHandler(tu usecase.ITelemetryUsecase) *telemetryHandler {
 }
 
 func (th *telemetryHandler) SendLocation(stream v1.TelemetryService_SendLocationServer) error {
+	log.Println("telemetryHandler.SendLocation started.")
+	defer log.Println("telemetryHandler.SendLocation ended.")
 	ctx := stream.Context()
 
 	for {
