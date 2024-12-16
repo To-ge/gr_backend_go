@@ -19,7 +19,7 @@ func NewDBConnector() (*DBConnector, error) {
 	dsn := combineDBInfo(*conf.DBInfo)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
-	models := []interface{}{model.User{}, model.Location{}}
+	models := []interface{}{model.User{}, model.Location{}, model.TelemetryLog{}}
 	if err := db.AutoMigrate(models...); err != nil {
 		log.Printf("Failed to migrate models: %s", err.Error())
 		return nil, err

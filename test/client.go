@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand/v2"
 	"time"
 
 	v1 "github.com/To-ge/gr_backend_go/adapter/grpc/api/gen/go/v1"
@@ -24,10 +23,10 @@ func main() {
 	}
 	fmt.Println("finished loading...")
 
-	address := config.LoadConfig().GrpcInfo.Address
-	fmt.Println("address: ", address)
+	testInfo := config.LoadConfig().TestInfo
+	fmt.Println("address: ", testInfo.GrpcAddress)
 	conn, err := grpc.NewClient(
-		address,
+		testInfo.GrpcAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -49,9 +48,9 @@ func main() {
 	for i := 0; i < 5; i++ {
 		message := &v1.SendLocationRequest{
 			Timestamp: time.Now().Unix(),
-			Latitude:  rand.Float64() * 100,
-			Longitude: rand.Float64() * 100,
-			Altitude:  rand.Float32() * 100,
+			Latitude:  testInfo.Location.Latitude + float64(i)*0.001,
+			Longitude: testInfo.Location.Longitude + float64(i)*0.001,
+			Altitude:  testInfo.Location.Altitude,
 		}
 		stream.Send(message)
 		fmt.Printf("send %d message...\n", i)

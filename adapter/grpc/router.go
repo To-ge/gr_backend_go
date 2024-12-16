@@ -50,10 +50,11 @@ func InitRouter() error {
 		return err
 	}
 
-	v1.RegisterTelemetryServiceServer(server, handler.NewTelemetryHandler(usecase.NewTelemetryUsecase(service.NewTelemetryService(repository.NewtelemetryRepository(dbConn)))))
+	v1.RegisterTelemetryServiceServer(server, handler.NewTelemetryHandler(usecase.NewTelemetryUsecase(service.NewTelemetryService(repository.NewtelemetryRepository(dbConn), repository.NewTelemetryLogRepository(dbConn)))))
 
 	reflection.Register(server)
 	go server.Serve(listenPort)
+	log.Println("grpc server is running! addr: ", address)
 
 	return nil
 }

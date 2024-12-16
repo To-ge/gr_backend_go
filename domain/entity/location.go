@@ -56,9 +56,13 @@ func NewLiveLocationManager() *liveLocationManager {
 func (llm *liveLocationManager) Add(location Location) {
 	llm.mu.Lock()
 	if llm.timer == nil {
+		jst, _ := time.LoadLocation("Asia/Tokyo")
+		telemetryLog = NewTelemetryLog(time.Now().In(jst))
+
 		llm.timer = time.NewTimer(time.Duration(timerMinutes) * time.Minute)
 		go llm.startTimer()
 	}
+	telemetryLog.IncrementLocationCount()
 	llm.LocationList = append(llm.LocationList, location)
 	llm.mu.Unlock()
 
@@ -136,7 +140,7 @@ func (llm *liveLocationManager) emptyChannelList() {
 	llm.LocationList = []Location{}
 }
 
-func (llm *liveLocationManager) StopTimer() {
+func (llm *liveLocationManager) StopTimer() *TelemetryLog {
 	llm.mu.Lock()
 	defer llm.mu.Unlock()
 
@@ -147,4 +151,8 @@ func (llm *liveLocationManager) StopTimer() {
 	ctx, cancel := context.WithCancel(context.Background())
 	llm.ctx = ctx
 	llm.cancel = cancel
+
+	jst, _ := time.LoadLocation("Asia/Tokyo")
+	telemetryLog.EndTime = time.Now().In(jst)
+	return telemetryLog
 }

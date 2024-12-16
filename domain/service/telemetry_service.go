@@ -11,17 +11,19 @@ type ITelemetryService interface {
 }
 
 type telemetryService struct {
-	repo repository.ITelemetryRepository
+	telemetryRepo    repository.ITelemetryRepository
+	telemetryLogRepo repository.ITelemetryLogRepository
 }
 
-func NewTelemetryService(repo repository.ITelemetryRepository) ITelemetryService {
+func NewTelemetryService(telemetryRepo repository.ITelemetryRepository, telemetryLogRepo repository.ITelemetryLogRepository) ITelemetryService {
 	return &telemetryService{
-		repo: repo,
+		telemetryRepo:    telemetryRepo,
+		telemetryLogRepo: telemetryLogRepo,
 	}
 }
 
 func (ts *telemetryService) SendLocation(location entity.Location) error {
-	if err := ts.repo.CreateLocation(location); err != nil {
+	if err := ts.telemetryRepo.CreateLocation(location); err != nil {
 		return err
 	}
 	entity.LiveLocationManager.Add(location)
@@ -30,5 +32,6 @@ func (ts *telemetryService) SendLocation(location entity.Location) error {
 }
 
 func (ts *telemetryService) Stop() {
-	entity.LiveLocationManager.StopTimer()
+	telemetryLog := entity.LiveLocationManager.StopTimer()
+	ts.telemetryLogRepo.CreateTelemetryLog(*telemetryLog)
 }
