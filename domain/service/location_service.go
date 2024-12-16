@@ -7,7 +7,7 @@ import (
 
 type ILocationService interface {
 	StreamLiveLocation() (*entity.LocationChannel, error)
-	StreamArchiveLocation(entity.TimeSpan) (entity.LocationChannel, error)
+	StreamArchiveLocation(entity.TimeSpan) (*entity.LocationChannel, error)
 }
 
 type locationService struct {
@@ -32,7 +32,7 @@ func (ls *locationService) StreamLiveLocation() (*entity.LocationChannel, error)
 	return ch, nil
 }
 
-func (ls *locationService) StreamArchiveLocation(span entity.TimeSpan) (entity.LocationChannel, error) {
+func (ls *locationService) StreamArchiveLocation(span entity.TimeSpan) (*entity.LocationChannel, error) {
 	ch, err := ls.repo.StreamArchiveLocation(span)
 	if err != nil {
 		return nil, err

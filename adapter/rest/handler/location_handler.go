@@ -72,6 +72,8 @@ func (lh *locationHandler) StreamLiveLocation() echo.HandlerFunc {
 
 func (lh *locationHandler) StreamArchiveLocation() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log.Println("locationHandler.StreamArchiveLocation started.")
+		defer log.Println("locationHandler.StreamArchiveLocation ended.")
 		var input *model.StreamArchiveLocationInput
 		if err := c.Bind(&input); err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid input"})
@@ -83,7 +85,7 @@ func (lh *locationHandler) StreamArchiveLocation() echo.HandlerFunc {
 
 		// ヘッダーを設定
 		c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextPlainCharsetUTF8)
+		c.Response().Header().Set(echo.HeaderContentType, "application/json; charset=utf-8")
 		c.Response().Header().Set("Transfer-Encoding", "chunked")
 		c.Response().Header().Set("Cache-Control", "no-cache")
 		c.Response().WriteHeader(http.StatusOK)
@@ -101,12 +103,14 @@ func (lh *locationHandler) StreamArchiveLocation() echo.HandlerFunc {
 			// JSONエンコード
 			locationJSON, err := json.Marshal(location)
 			if err != nil {
-				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to encode location"})
+				log.Printf("Error encoding location: %v\n", err)
+				continue
 			}
 
 			// 書き込み
 			if _, err := writer.Write(append(locationJSON, '\n')); err != nil {
-				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to write to response"})
+				log.Printf("Error writing to response: %v", err)
+				continue
 			}
 
 			writer.Flush()

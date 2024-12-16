@@ -65,7 +65,7 @@ func (lu *locationUsecase) StreamArchiveLocation(input *model.StreamArchiveLocat
 	go func(locCh chan<- model.Location) {
 		defer close(locationChannel)
 		for {
-			location, ok := <-ch
+			location, ok := <-*ch
 
 			if !ok {
 				break

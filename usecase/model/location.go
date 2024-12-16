@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Location struct {
 	Timestamp int64   `json:"timestamp"`
 	Latitude  float64 `json:"latitude"`
@@ -17,8 +19,8 @@ type StreamLiveLocationOutput struct {
 
 // Stream Archive Location
 type StreamArchiveLocationInput struct {
-	StartTime int64 `json:"start_time"`
-	EndTime   int64 `json:"end_time"`
+	StartTime time.Time `json:"start_time"`
+	EndTime   time.Time `json:"end_time"`
 }
 type StreamArchiveLocationOutput struct {
 	LocationChannel <-chan Location
