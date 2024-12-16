@@ -22,11 +22,6 @@ type Location struct {
 
 type LocationChannel chan Location
 
-type TimeSpan struct {
-	StartTime int64
-	EndTime   int64
-}
-
 type liveLocationManager struct {
 	mu           *sync.Mutex
 	LocationList []Location

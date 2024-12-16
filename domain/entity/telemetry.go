@@ -13,6 +13,11 @@ var (
 	telemetryLog *TelemetryLog
 )
 
+type TimeSpan struct {
+	StartTime time.Time
+	EndTime   time.Time
+}
+
 type TelemetryLog struct {
 	StartTime     time.Time
 	EndTime       time.Time

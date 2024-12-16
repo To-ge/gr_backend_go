@@ -31,3 +31,19 @@ func (tlr *telemetryLogRepository) CreateTelemetryLog(tl entity.TelemetryLog) er
 	}
 	return nil
 }
+
+func (tlr *telemetryLogRepository) GetTelemetryLogs() ([]entity.TimeSpan, error) {
+	var telemetryLogs []model.TelemetryLog
+	if err := tlr.dbc.Conn.Find(&telemetryLogs).Error; err != nil {
+		return nil, fmt.Errorf("archive location can't find, %s", err.Error())
+	}
+
+	var result []entity.TimeSpan
+	for _, v := range telemetryLogs {
+		result = append(result, entity.TimeSpan{
+			StartTime: v.StartTime,
+			EndTime:   v.EndTime,
+		})
+	}
+	return result, nil
+}
