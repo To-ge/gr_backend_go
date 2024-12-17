@@ -25,6 +25,10 @@ func (uh *telemetryLogHandler) GetTelemetryLogs() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid input"})
 		}
 		logs, err := uh.usecase.GetTelemetryLogs(input)
+
+		c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+		c.Response().Header().Set(echo.HeaderContentType, "application/json; charset=utf-8")
+
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err.Error())
 		}

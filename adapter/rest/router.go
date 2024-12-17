@@ -2,6 +2,7 @@ package rest
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/To-ge/gr_backend_go/adapter/rest/handler"
 	"github.com/To-ge/gr_backend_go/domain/service"
@@ -24,6 +25,14 @@ func InitRouter() (*echo.Echo, error) {
 		middleware.Logger(),
 		middleware.Recover(),
 	)
+
+	e.OPTIONS("/*", func(c echo.Context) error {
+		c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+		c.Response().Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		c.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		return c.NoContent(http.StatusNoContent)
+	})
+
 	dbConn, err := database.NewDBConnector()
 	if err != nil {
 		return nil, err
