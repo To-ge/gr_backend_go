@@ -2,6 +2,8 @@ package repository
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/To-ge/gr_backend_go/domain/entity"
@@ -30,13 +32,14 @@ func (lr locationRepository) StreamArchiveLocation(span entity.TimeSpan) (*entit
 	}
 
 	ch := make(entity.LocationChannel)
+	interval, _ := strconv.Atoi(os.Getenv("TX_INTERVAL"))
 
 	go func() {
 		defer close(ch)
 
 		time.Sleep(2 * time.Second)
 		for _, v := range locations {
-			time.Sleep(1 * time.Second)
+			time.Sleep(time.Duration(interval) * time.Millisecond)
 			ch <- entity.Location{
 				Timestamp: v.Timestamp,
 				Latitude:  v.Latitude,

@@ -5,11 +5,12 @@ import (
 	"log"
 	"sync"
 	"time"
+
+	"github.com/To-ge/gr_backend_go/config"
 )
 
 var (
 	LiveLocationManager = NewLiveLocationManager()
-	timerMinutes        = 1
 )
 
 type Location struct {
@@ -54,7 +55,7 @@ func (llm *liveLocationManager) Add(location Location) {
 		jst, _ := time.LoadLocation("Asia/Tokyo")
 		telemetryLog = NewTelemetryLog(time.Now().In(jst))
 
-		llm.timer = time.NewTimer(time.Duration(timerMinutes) * time.Minute)
+		llm.timer = time.NewTimer(time.Duration(config.LoadConfig().DomainInfo.TimerMinutes) * time.Minute)
 		go llm.startTimer()
 	}
 	telemetryLog.IncrementLocationCount()
@@ -76,6 +77,7 @@ func (llm *liveLocationManager) Add(location Location) {
 }
 
 func (llm *liveLocationManager) startTimer() {
+	timerMinutes := config.LoadConfig().DomainInfo.TimerMinutes
 	for {
 		llm.mu.Lock()
 		timer := llm.timer // タイマーのローカルコピーを取得

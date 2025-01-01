@@ -9,6 +9,7 @@ type GetTelemetryLogsOutput struct {
 }
 
 type TelemetryLog struct {
-	StartTime time.Time `json:"start_time"`
-	EndTime   time.Time `json:"end_time"`
+	StartTime     time.Time `json:"start_time"`
+	EndTime       time.Time `json:"end_time"`
+	LocationCount int       `json:"location_count"`
 }

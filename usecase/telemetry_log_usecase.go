@@ -28,8 +28,9 @@ func (tlu *telemetryLogUsecase) GetTelemetryLogs(input *model.GetTelemetryLogsIn
 	var list []model.TelemetryLog
 	for _, v := range logs {
 		list = append(list, model.TelemetryLog{
-			StartTime: v.StartTime,
-			EndTime:   v.EndTime,
+			StartTime:     v.StartTime,
+			EndTime:       v.EndTime,
+			LocationCount: v.LocationCount,
 		})
 	}
 
