@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/To-ge/gr_backend_go/domain/entity"
 	domainRepo "github.com/To-ge/gr_backend_go/domain/repository"
@@ -14,12 +15,12 @@ type userRepository struct {
 }
 
 func NewUserRepository(dbc *database.DBConnector) domainRepo.IUserRepository {
-	return userRepository{
+	return &userRepository{
 		dbc: dbc,
 	}
 }
 
-func (ur userRepository) CreateUser(user entity.User) error {
+func (ur *userRepository) CreateUser(user entity.User) error {
 	record := &model.User{
 		ID:    user.ID,
 		Name:  user.Name,
@@ -29,4 +30,19 @@ func (ur userRepository) CreateUser(user entity.User) error {
 		return fmt.Errorf("new user can't create, %s", err.Error())
 	}
 	return nil
+}
+
+func (ur *userRepository) FindOne(username string, password string) (*entity.User, error) {
+	var user model.User
+	if err := ur.dbc.Conn.Where("username = ? AND password = ?", username, password).First(&user).Error; err != nil {
+		log.Printf("DB Error: %s\n", err.Error())
+		return nil, err
+	}
+
+	return &entity.User{
+		ID:       user.ID,
+		Name:     user.Name,
+		Password: user.Password,
+		Email:    user.Email,
+	}, nil
 }

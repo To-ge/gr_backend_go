@@ -4,18 +4,22 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/gorilla/sessions"
 )
 
 type appConfig struct {
 	RestInfo   *RestInfo
 	GrpcInfo   *GrpcInfo
 	DBInfo     *DBInfo
+	RedisInfo  *RedisInfo
 	DomainInfo *DomainInfo
 	TestInfo   *TestInfo
 }
 
 type RestInfo struct {
-	Address string
+	Address      string
+	CookieSecret string
 }
 
 type GrpcInfo struct {
@@ -28,6 +32,10 @@ type DBInfo struct {
 	Address  string
 	DBName   string
 	DBPort   string
+}
+
+type RedisInfo struct {
+	Address string
 }
 
 type DomainInfo struct {
@@ -47,9 +55,11 @@ type TestLocation struct {
 
 func LoadConfig() *appConfig {
 	address := ":" + os.Getenv("PUBLIC_PORT")
+	cookieSecret := os.Getenv("COOKIE_SECRET")
 
 	restInfo := &RestInfo{
-		Address: address,
+		Address:      address,
+		CookieSecret: cookieSecret,
 	}
 
 	address = fmt.Sprintf(":%s", os.Getenv("PRIVATE_PORT"))
@@ -63,6 +73,10 @@ func LoadConfig() *appConfig {
 		Address:  os.Getenv("DB_ADDRESS"),
 		DBName:   os.Getenv("DB_NAME"),
 		DBPort:   os.Getenv("DB_PORT"),
+	}
+
+	redisInfo := &RedisInfo{
+		Address: os.Getenv(("REDIS_ADDRESS")),
 	}
 
 	i, _ := strconv.Atoi(os.Getenv("TIMER_MINUTES"))
@@ -87,9 +101,18 @@ func LoadConfig() *appConfig {
 		RestInfo:   restInfo,
 		GrpcInfo:   grpcInfo,
 		DBInfo:     dbInfo,
+		RedisInfo:  redisInfo,
 		DomainInfo: domainInfo,
 		TestInfo:   testInfo,
 	}
 
+	secret := os.Getenv("COOKIE_SECRET")
+	SessionStore = sessions.NewCookieStore([]byte(secret))
+
 	return &appConfig
 }
+
+var (
+	SessionStore *sessions.CookieStore
+	SessionKey   = "key"
+)

@@ -4,26 +4,29 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/To-ge/gr_backend_go/adapter/middleware"
 	"github.com/To-ge/gr_backend_go/adapter/rest/handler"
 	"github.com/To-ge/gr_backend_go/domain/service"
 	"github.com/To-ge/gr_backend_go/infrastructure/database"
 	"github.com/To-ge/gr_backend_go/infrastructure/repository"
 	"github.com/To-ge/gr_backend_go/usecase"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echoMiddleware "github.com/labstack/echo/v4/middleware"
 )
 
 var (
 	apiVersion = 1
 	rootPath   = fmt.Sprintf("/api/v%d", apiVersion)
+
+	pathnames = []string{}
 )
 
 func InitRouter() (*echo.Echo, error) {
 	e := echo.New()
 
 	e.Use(
-		middleware.Logger(),
-		middleware.Recover(),
+		echoMiddleware.Logger(),
+		echoMiddleware.Recover(),
 	)
 
 	e.OPTIONS("/*", func(c echo.Context) error {
@@ -43,12 +46,12 @@ func InitRouter() (*echo.Echo, error) {
 		authGroup.POST("/signup", handler.NewUserHandler(usecase.NewUserUsecase(repository.NewUserRepository(dbConn))).CreateUser())
 	}
 
-	telemetryLogGroup := e.Group(rootPath + "/telemetry_log")
+	telemetryLogGroup := e.Group(rootPath+"/telemetry_log", middleware.SessionMiddleware)
 	{
 		telemetryLogGroup.GET("", handler.NewTelemetryLogHandler(usecase.NewTelemetryLogUsecase(repository.NewTelemetryLogRepository(dbConn))).GetTelemetryLogs())
 	}
 
-	streamGroup := e.Group(rootPath + "/stream")
+	streamGroup := e.Group(rootPath+"/stream", middleware.SessionMiddleware)
 	locationGroup := streamGroup.Group("/location")
 	{
 		locationGroup.GET("/live", handler.NewLocationHandler(usecase.NewLocationUsecase(service.NewLocationService(repository.NewLocationRepository(dbConn)))).StreamLiveLocation())        // 現在受信中の位置情報データの取得

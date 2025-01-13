@@ -7,9 +7,10 @@ import (
 )
 
 type User struct {
-	ID    string
-	Name  string
-	Email string
+	ID       string
+	Name     string
+	Password string
+	Email    string
 }
 
 func NewUser(name string, email string) *User {

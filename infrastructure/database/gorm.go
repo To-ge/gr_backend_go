@@ -29,5 +29,5 @@ func NewDBConnector() (*DBConnector, error) {
 }
 
 func combineDBInfo(info config.DBInfo) string {
-	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Tokyo", info.Address, info.User, info.Password, info.DBName, info.DBPort)
+	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=require TimeZone=Asia/Tokyo", info.Address, info.User, info.Password, info.DBName, info.DBPort)
 }
