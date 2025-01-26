@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"time"
 
 	v1 "github.com/To-ge/gr_backend_go/adapter/grpc/api/gen/go/v1"
 	"github.com/To-ge/gr_backend_go/adapter/grpc/handler"
@@ -17,6 +18,7 @@ import (
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 )
@@ -34,7 +36,17 @@ func InitRouter() error {
 	opts := []grpc_recovery.Option{
 		grpc_recovery.WithRecoveryHandler(recoveryHandler),
 	}
+	// Keepalive設定を追加
+	kaParams := keepalive.ServerParameters{
+		MaxConnectionIdle:     30 * time.Minute, // アイドル状態での最大接続時間
+		MaxConnectionAge:      3 * time.Hour,    // 接続の最大寿命
+		MaxConnectionAgeGrace: 5 * time.Minute,  // 切断前の猶予期間
+		Time:                  1 * time.Minute,  // PING送信の間隔
+		Timeout:               60 * time.Second, // PING応答のタイムアウト
+	}
+
 	server := grpc.NewServer(
+		grpc.KeepaliveParams(kaParams), // Keepalive設定
 		grpc.ChainUnaryInterceptor(
 			grpc_ctxtags.UnaryServerInterceptor(grpc_ctxtags.WithFieldExtractor(grpc_ctxtags.CodeGenRequestFieldExtractor)),
 			grpc_recovery.UnaryServerInterceptor(opts...),
