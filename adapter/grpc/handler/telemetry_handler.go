@@ -3,8 +3,11 @@ package handler
 import (
 	"io"
 	"log"
+	"math"
+	"time"
 
 	v1 "github.com/To-ge/gr_backend_go/adapter/grpc/api/gen/go/v1"
+	"github.com/To-ge/gr_backend_go/pkg"
 	"github.com/To-ge/gr_backend_go/usecase"
 	"github.com/To-ge/gr_backend_go/usecase/model"
 	"google.golang.org/grpc/codes"
@@ -35,7 +38,8 @@ func (th *telemetryHandler) SendLocation(stream v1.TelemetryService_SendLocation
 			return nil
 		default:
 			req, err := stream.Recv()
-			log.Println(req)
+			currentTime := float64(time.Now().UnixMicro()) / math.Pow10(6)
+			pkg.InputLocationLogger.Printf(",%f,%v,%v,%v\n", currentTime, req.GetLatitude(), req.GetLongitude(), req.GetAltitude())
 			if err == io.EOF {
 				log.Println("telemetryHandler.SendLocation Client closed the stream")
 				th.usecase.Stop()

@@ -14,6 +14,7 @@ import (
 
 func main() {
 	pkg.InitLogger()
+	pkg.InitTimestampLogger()
 	if err := godotenv.Load("../.env"); err != nil {
 		if err := godotenv.Load(".env"); err != nil {
 			log.Fatal("Error loading .env file")

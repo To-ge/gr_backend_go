@@ -4,9 +4,18 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
+)
+
+type Mode int
+
+const (
+	Usually Mode = iota
+	Demo
 )
 
 type appConfig struct {
+	Mode       Mode
 	RestInfo   *RestInfo
 	GrpcInfo   *GrpcInfo
 	DBInfo     *DBInfo
@@ -36,6 +45,7 @@ type DomainInfo struct {
 
 type TestInfo struct {
 	GrpcAddress string
+	UseTLS      bool
 	Location    TestLocation
 }
 
@@ -46,8 +56,14 @@ type TestLocation struct {
 }
 
 func LoadConfig() *appConfig {
-	address := ":" + os.Getenv("PUBLIC_PORT")
+	var mode Mode
+	if os.Getenv("MODE") == "demo" {
+		mode = Demo
+	} else {
+		mode = Usually
+	}
 
+	address := ":" + os.Getenv("PUBLIC_PORT")
 	restInfo := &RestInfo{
 		Address: address,
 	}
@@ -71,11 +87,13 @@ func LoadConfig() *appConfig {
 	}
 
 	testAddress := os.Getenv("TEST_PRIVATE_ADDRESS")
+	useTLS := !strings.Contains(testAddress, "localhost")
 	latitude, _ := strconv.ParseFloat(os.Getenv("TEST_LATITUDE"), 64)
 	longitude, _ := strconv.ParseFloat(os.Getenv("TEST_LONGITUDE"), 64)
 	altitude, _ := strconv.ParseFloat(os.Getenv("TEST_ALTITUDE"), 32)
 	testInfo := &TestInfo{
 		GrpcAddress: testAddress,
+		UseTLS:      useTLS,
 		Location: TestLocation{
 			Latitude:  latitude,
 			Longitude: longitude,
@@ -84,6 +102,7 @@ func LoadConfig() *appConfig {
 	}
 
 	appConfig := appConfig{
+		Mode:       mode,
 		RestInfo:   restInfo,
 		GrpcInfo:   grpcInfo,
 		DBInfo:     dbInfo,

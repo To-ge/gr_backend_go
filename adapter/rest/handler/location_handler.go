@@ -2,9 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
+	"math"
 	"net/http"
+	"time"
 
+	"github.com/To-ge/gr_backend_go/config"
+	"github.com/To-ge/gr_backend_go/pkg"
 	"github.com/To-ge/gr_backend_go/usecase"
 	"github.com/To-ge/gr_backend_go/usecase/model"
 	"github.com/labstack/echo/v4"
@@ -43,6 +48,15 @@ func (lh *locationHandler) StreamLiveLocation() echo.HandlerFunc {
 		// ストリームを取得
 		writer := c.Response()
 
+		var logger *log.Logger
+		if config.LoadConfig().Mode == config.Demo {
+			clientID := fmt.Sprintf("client_%d", time.Now().UnixNano()) // クライアント識別用の一意なIDを生成
+			logFilePath := fmt.Sprintf("../gps-out/%s.log", clientID)
+			if logger, err = pkg.CreateLogFile(logFilePath); err != nil {
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "server error"})
+			}
+		}
+
 		for {
 			location, ok := <-output.LocationChannel
 
@@ -63,6 +77,11 @@ func (lh *locationHandler) StreamLiveLocation() echo.HandlerFunc {
 				continue
 			}
 
+			currentTime := float64(time.Now().UnixMicro()) / math.Pow10(6)
+			pkg.OutputLocationLogger.Printf(",%v,%v,%v,%v\n", currentTime, location.Latitude, location.Longitude, location.Altitude)
+			if logger != nil {
+				logger.Printf(",%f,%v,%v,%v\n", currentTime, location.Latitude, location.Longitude, location.Altitude)
+			}
 			writer.Flush()
 		}
 
