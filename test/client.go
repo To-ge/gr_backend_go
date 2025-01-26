@@ -11,6 +11,7 @@ import (
 	"github.com/To-ge/gr_backend_go/pkg"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
@@ -25,9 +26,16 @@ func main() {
 
 	testInfo := config.LoadConfig().TestInfo
 	fmt.Println("address: ", testInfo.GrpcAddress)
+
+	var creds credentials.TransportCredentials
+	if testInfo.UseTLS {
+		creds = credentials.NewTLS(nil)
+	} else {
+		creds = insecure.NewCredentials()
+	}
 	conn, err := grpc.NewClient(
 		testInfo.GrpcAddress,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithTransportCredentials(creds),
 	)
 	if err != nil {
 		fmt.Println(err.Error())
