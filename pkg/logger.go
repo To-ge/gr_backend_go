@@ -70,14 +70,14 @@ func createLogFolder(folderName string) error {
 	return nil
 }
 
-func CreateLogFile(logFilePath string) (*log.Logger, error) {
+func CreateLogFile(logFilePath string) (*log.Logger, func(), error) {
 	logFile, err := os.Create(logFilePath)
 	if err != nil {
 		log.Printf("Error creating log file: %v\n", err.Error())
-		return nil, err
+		return nil, nil, err
 	}
-	// defer でファイルを閉じると同時に、空の場合に削除
-	defer func() {
+
+	cleanUp := func() {
 		logFile.Close()
 		// ファイルサイズを確認
 		fileInfo, err := os.Stat(logFilePath)
@@ -85,6 +85,7 @@ func CreateLogFile(logFilePath string) (*log.Logger, error) {
 			log.Printf("Error checking log file: %v\n", err)
 			return
 		}
+		fmt.Println(fileInfo.Size())
 		if fileInfo.Size() == 0 {
 			if err := os.Remove(logFilePath); err != nil {
 				log.Printf("Error deleting empty log file: %v\n", err)
@@ -92,7 +93,7 @@ func CreateLogFile(logFilePath string) (*log.Logger, error) {
 				log.Printf("Deleted empty log file: %s\n", logFilePath)
 			}
 		}
-	}()
+	}
 
-	return log.New(logFile, "", log.LstdFlags), nil
+	return log.New(logFile, "", log.LstdFlags), cleanUp, nil
 }
