@@ -70,7 +70,7 @@ func (lh *locationHandler) StreamLiveLocation() echo.HandlerFunc {
 				return nil
 			case location, ok := <-output.LocationChannel:
 				if !ok {
-					break
+					return nil
 				}
 
 				// JSONエンコード
