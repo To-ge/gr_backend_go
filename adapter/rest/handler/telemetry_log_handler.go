@@ -26,7 +26,7 @@ func (uh *telemetryLogHandler) GetTelemetryLogs() echo.HandlerFunc {
 		}
 		logs, err := uh.usecase.GetTelemetryLogs(input)
 
-		c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+		// c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 		c.Response().Header().Set(echo.HeaderContentType, "application/json; charset=utf-8")
 
 		if err != nil {

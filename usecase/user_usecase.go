@@ -27,7 +27,6 @@ func (uu *userUsecase) CreateUser(input *model.CreateUserInput) (*model.CreateUs
 	}
 
 	return &model.CreateUserOutput{
-		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,
 	}, nil

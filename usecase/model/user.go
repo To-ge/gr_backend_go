@@ -6,7 +6,6 @@ type CreateUserInput struct {
 }
 
 type CreateUserOutput struct {
-	ID    string `json:"id"`
 	Name  string `json:"username"`
 	Email string `json:"email"`
 }

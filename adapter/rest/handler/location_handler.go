@@ -39,10 +39,11 @@ func (lh *locationHandler) StreamLiveLocation() echo.HandlerFunc {
 		}
 
 		// ヘッダーを設定
-		c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+		c.Response().Header().Set("Access-Control-Allow-Origin", config.LoadConfig().FEUrl)
 		c.Response().Header().Set(echo.HeaderContentType, "application/json; charset=utf-8")
 		c.Response().Header().Set("Transfer-Encoding", "chunked")
 		c.Response().Header().Set("Cache-Control", "no-cache")
+		c.Response().Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Response().WriteHeader(http.StatusOK)
 
 		// ストリームを取得
@@ -111,10 +112,11 @@ func (lh *locationHandler) StreamArchiveLocation() echo.HandlerFunc {
 		}
 
 		// ヘッダーを設定
-		c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+		c.Response().Header().Set("Access-Control-Allow-Origin", config.LoadConfig().FEUrl)
 		c.Response().Header().Set(echo.HeaderContentType, "application/json; charset=utf-8")
 		c.Response().Header().Set("Transfer-Encoding", "chunked")
 		c.Response().Header().Set("Cache-Control", "no-cache")
+		c.Response().Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Response().WriteHeader(http.StatusOK)
 
 		// ストリームを取得
