@@ -9,6 +9,10 @@ import (
 	"github.com/To-ge/gr_backend_go/infrastructure/database"
 )
 
+var (
+	expiration = 30 * time.Minute
+)
+
 type authenticationRepository struct {
 	dbc  *database.DBConnector
 	rdbc *database.RedisConnector
@@ -21,9 +25,9 @@ func NewAuthenticationRepository(dbc *database.DBConnector, rdbc *database.Redis
 	}
 }
 
-func (ar *authenticationRepository) SignIn(key string) error {
+func (ar *authenticationRepository) SignIn(key string, value string) error {
 	// Store session in Redis
-	if err := ar.rdbc.Conn.Set(context.Background(), key, time.Now().Format(time.RFC3339), 0).Err(); err != nil {
+	if err := ar.rdbc.Conn.Set(context.Background(), key, value, expiration).Err(); err != nil {
 		log.Printf("Redis Error: %s\n", err.Error())
 		return err
 	}
@@ -32,6 +36,14 @@ func (ar *authenticationRepository) SignIn(key string) error {
 
 func (ar *authenticationRepository) SignOut(key string) error {
 	if err := ar.rdbc.Conn.Del(context.Background(), key).Err(); err != nil {
+		log.Printf("Redis Error: %s\n", err.Error())
+		return err
+	}
+	return nil
+}
+
+func (ar *authenticationRepository) RefreshSessionExpiration(key string) error {
+	if err := ar.rdbc.Conn.Expire(context.Background(), key, expiration).Err(); err != nil {
 		log.Printf("Redis Error: %s\n", err.Error())
 		return err
 	}

@@ -6,7 +6,7 @@ import "net/http"
 type SignInInput struct {
 	ResponseWriter http.ResponseWriter
 	Request        *http.Request
-	Username       string `json:"username"`
+	Email          string `json:"email"`
 	Password       string `json:"password"`
 }
 type SignInOutput struct{}
@@ -17,3 +17,6 @@ type SignOutInput struct {
 	Request        *http.Request
 }
 type SignOutOutput struct{}
+
+type SessionCheckInput struct{}
+type SessionCheckOutput struct{}

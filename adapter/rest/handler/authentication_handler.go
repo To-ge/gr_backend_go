@@ -12,7 +12,7 @@ type authenticationHandler struct {
 	usecase usecase.IAuthenticationUsecase
 }
 
-func (ah *authenticationHandler) NewAuthenticationHandler(au usecase.IAuthenticationUsecase) *authenticationHandler {
+func NewAuthenticationHandler(au usecase.IAuthenticationUsecase) *authenticationHandler {
 	return &authenticationHandler{
 		usecase: au,
 	}
@@ -49,5 +49,11 @@ func (ah *authenticationHandler) SignOut() echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, map[string]string{"message": "signed out successfully"})
+	}
+}
+
+func (ah *authenticationHandler) SessionCheck() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{"message": "session is valid"})
 	}
 }

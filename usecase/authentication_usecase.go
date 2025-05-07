@@ -12,6 +12,7 @@ import (
 type IAuthenticationUsecase interface {
 	SignIn(*model.SignInInput) error
 	SignOut(*model.SignOutInput) error
+	RefreshSessionExpiration(key string) error
 }
 
 type authenticationUsecase struct {
@@ -27,7 +28,7 @@ func NewAuthenticationUsecase(as service.IAuthenticationService) IAuthentication
 }
 
 func (au *authenticationUsecase) SignIn(input *model.SignInInput) error {
-	key, err := au.srv.SignIn(input.Username, input.Password)
+	key, err := au.srv.SignIn(input.Email, input.Password)
 	if err != nil {
 		return err
 	}
@@ -46,7 +47,8 @@ func (au *authenticationUsecase) SignOut(input *model.SignOutInput) error {
 	}
 	value := sess.Values[config.SessionKey]
 	if value != nil {
-		key := "session:" + value.(string)
+		// key := strings.TrimPrefix(value.(string), "session:")
+		key := value.(string)
 		au.srv.SignOut(key)
 		sess.Options.MaxAge = -1
 	} else {
@@ -54,4 +56,11 @@ func (au *authenticationUsecase) SignOut(input *model.SignOutInput) error {
 	}
 
 	return sess.Save(input.Request, input.ResponseWriter)
+}
+
+func (au *authenticationUsecase) RefreshSessionExpiration(key string) error {
+	if err := au.srv.RefreshSessionExpiration(key); err != nil {
+		return err
+	}
+	return nil
 }

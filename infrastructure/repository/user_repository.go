@@ -32,9 +32,9 @@ func (ur *userRepository) CreateUser(user entity.User) error {
 	return nil
 }
 
-func (ur *userRepository) FindOne(username string, password string) (*entity.User, error) {
+func (ur *userRepository) FindOne(email string, password string) (*entity.User, error) {
 	var user model.User
-	if err := ur.dbc.Conn.Where("username = ? AND password = ?", username, password).First(&user).Error; err != nil {
+	if err := ur.dbc.Conn.Where("email = ? AND password = ?", email, password).First(&user).Error; err != nil {
 		log.Printf("DB Error: %s\n", err.Error())
 		return nil, err
 	}

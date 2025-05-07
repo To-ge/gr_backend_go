@@ -9,6 +9,8 @@ import (
 )
 
 type appConfig struct {
+	Deployment string
+	FEUrl      string
 	RestInfo   *RestInfo
 	GrpcInfo   *GrpcInfo
 	DBInfo     *DBInfo
@@ -54,6 +56,17 @@ type TestLocation struct {
 }
 
 func LoadConfig() *appConfig {
+	deployment := os.Getenv("DEPLOYMENT")
+	feUrl := func() string {
+		switch deployment {
+		case "local":
+			return os.Getenv("FE_URL_LOCAL")
+		case "develop":
+			return os.Getenv("FE_URL_DEV")
+		default:
+			return os.Getenv("FE_URL_DEFAULT")
+		}
+	}()
 	address := ":" + os.Getenv("PUBLIC_PORT")
 	cookieSecret := os.Getenv("COOKIE_SECRET")
 
@@ -98,6 +111,8 @@ func LoadConfig() *appConfig {
 	}
 
 	appConfig := appConfig{
+		Deployment: deployment,
+		FEUrl:      feUrl,
 		RestInfo:   restInfo,
 		GrpcInfo:   grpcInfo,
 		DBInfo:     dbInfo,

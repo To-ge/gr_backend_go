@@ -7,16 +7,14 @@ import (
 )
 
 type User struct {
-	ID       string
+	ID       uuid.UUID
 	Name     string
 	Password string
 	Email    string
 }
 
 func NewUser(name string, email string) *User {
-	uuid := uuid.NewString()
 	return &User{
-		ID:    uuid,
 		Name:  name,
 		Email: email,
 	}

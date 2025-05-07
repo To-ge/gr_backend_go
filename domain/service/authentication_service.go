@@ -4,11 +4,13 @@ import (
 	"fmt"
 
 	"github.com/To-ge/gr_backend_go/domain/repository"
+	"github.com/google/uuid"
 )
 
 type IAuthenticationService interface {
-	SignIn(username string, password string) (string, error)
+	SignIn(email string, password string) (string, error)
 	SignOut(sessionKey string) error
+	RefreshSessionExpiration(sessionKey string) error
 }
 
 type authenticationService struct {
@@ -23,16 +25,16 @@ func NewAuthenticationService(userRepo repository.IUserRepository, authRepo repo
 	}
 }
 
-func (as *authenticationService) SignIn(username string, password string) (string, error) {
-	user, err := as.userRepo.FindOne(username, password)
+func (as *authenticationService) SignIn(email string, password string) (string, error) {
+	user, err := as.userRepo.FindOne(email, password)
 	if err != nil {
 		return "", err
 	}
 	if user == nil {
 		return "", fmt.Errorf("user is not found")
 	}
-	key := "session:" + string(user.ID)
-	if err := as.authRepo.SignIn(key); err != nil {
+	key := "session:" + uuid.NewString()
+	if err := as.authRepo.SignIn(key, user.ID.String()); err != nil {
 		return "", err
 	}
 	return key, nil
@@ -40,6 +42,13 @@ func (as *authenticationService) SignIn(username string, password string) (strin
 
 func (as *authenticationService) SignOut(sessionKey string) error {
 	if err := as.authRepo.SignOut(sessionKey); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (as *authenticationService) RefreshSessionExpiration(sessionKey string) error {
+	if err := as.authRepo.RefreshSessionExpiration(sessionKey); err != nil {
 		return err
 	}
 	return nil
