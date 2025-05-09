@@ -6,7 +6,16 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
-    command: ["redis-server", "--appendonly", "yes"]
+      - ./tls:/certs
+    command: >
+      redis-server
+        --tls-port 6379
+        --port 0
+        --tls-cert-file /certs/redis.crt
+        --tls-key-file /certs/redis.key
+        --tls-ca-cert-file /certs/ca.crt
+        --appendonly yes
+        --tls-auth-clients no
     restart: unless-stopped
 
 volumes:
