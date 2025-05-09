@@ -150,3 +150,7 @@ var (
 	SessionStore *sessions.CookieStore
 	SessionKey   = "key"
 )
+
+const (
+	ContextKeyIsAdmin = "isAdmin"
+)

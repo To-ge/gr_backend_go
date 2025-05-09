@@ -11,6 +11,7 @@ type User struct {
 	Name     string
 	Password string
 	Email    string
+	IsAdmin  bool
 }
 
 func NewUser(name string, email string) *User {

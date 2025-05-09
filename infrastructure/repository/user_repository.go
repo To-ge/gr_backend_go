@@ -46,3 +46,19 @@ func (ur *userRepository) FindOne(email string, password string) (*entity.User, 
 		Email:    user.Email,
 	}, nil
 }
+
+func (ur *userRepository) FindOneById(id string) (*entity.User, error) {
+	var user model.User
+	if err := ur.dbc.Conn.Where("id = ?", id).First(&user).Error; err != nil {
+		log.Printf("DB Error: %s\n", err.Error())
+		return nil, err
+	}
+
+	return &entity.User{
+		ID:       user.ID,
+		Name:     user.Name,
+		Password: user.Password,
+		Email:    user.Email,
+		IsAdmin:  user.IsAdmin,
+	}, nil
+}

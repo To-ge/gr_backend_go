@@ -8,6 +8,7 @@ import (
 
 type IUserUsecase interface {
 	CreateUser(input *model.CreateUserInput) (*model.CreateUserOutput, error)
+	FindOneById(id string) (*model.User, error)
 }
 
 type userUsecase struct {
@@ -29,5 +30,19 @@ func (uu *userUsecase) CreateUser(input *model.CreateUserInput) (*model.CreateUs
 	return &model.CreateUserOutput{
 		Name:  user.Name,
 		Email: user.Email,
+	}, nil
+}
+
+func (uu *userUsecase) FindOneById(id string) (*model.User, error) {
+	user, err := uu.repo.FindOneById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.User{
+		ID:      user.ID,
+		Name:    user.Name,
+		Email:   user.Email,
+		IsAdmin: user.IsAdmin,
 	}, nil
 }
