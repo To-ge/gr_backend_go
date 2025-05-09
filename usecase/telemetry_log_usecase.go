@@ -20,7 +20,7 @@ func NewTelemetryLogUsecase(tlr repository.ITelemetryLogRepository) ITelemetryLo
 }
 
 func (tlu *telemetryLogUsecase) GetTelemetryLogs(input *model.GetTelemetryLogsInput) (*model.GetTelemetryLogsOutput, error) {
-	logs, err := tlu.repo.GetTelemetryLogs()
+	logs, err := tlu.repo.GetPublicTelemetryLogs()
 	if err != nil {
 		return nil, err
 	}
