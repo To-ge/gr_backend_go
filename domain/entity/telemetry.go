@@ -19,9 +19,11 @@ type TimeSpan struct {
 }
 
 type TelemetryLog struct {
+	ID            uint
 	StartTime     time.Time
 	EndTime       time.Time
 	LocationCount int
+	IsPublic      bool
 }
 
 func NewTelemetryLog(time time.Time) *TelemetryLog {

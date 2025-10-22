@@ -34,7 +34,26 @@ func (tlr *telemetryLogRepository) CreateTelemetryLog(tl entity.TelemetryLog) er
 
 func (tlr *telemetryLogRepository) GetTelemetryLogs() ([]entity.TelemetryLog, error) {
 	var telemetryLogs []model.TelemetryLog
-	if err := tlr.dbc.Conn.Find(&telemetryLogs).Error; err != nil {
+	if err := tlr.dbc.Conn.Order("id asc").Find(&telemetryLogs).Error; err != nil {
+		return nil, fmt.Errorf("archive location can't find, %s", err.Error())
+	}
+
+	var result []entity.TelemetryLog
+	for _, v := range telemetryLogs {
+		result = append(result, entity.TelemetryLog{
+			ID:            v.ID,
+			StartTime:     v.StartTime,
+			EndTime:       v.EndTime,
+			LocationCount: v.LocationCount,
+			IsPublic:      v.IsPublic,
+		})
+	}
+	return result, nil
+}
+
+func (tlr *telemetryLogRepository) GetPublicTelemetryLogs() ([]entity.TelemetryLog, error) {
+	var telemetryLogs []model.TelemetryLog
+	if err := tlr.dbc.Conn.Where("is_public = ?", "true").Order("id asc").Find(&telemetryLogs).Error; err != nil {
 		return nil, fmt.Errorf("archive location can't find, %s", err.Error())
 	}
 
@@ -49,19 +68,6 @@ func (tlr *telemetryLogRepository) GetTelemetryLogs() ([]entity.TelemetryLog, er
 	return result, nil
 }
 
-func (tlr *telemetryLogRepository) GetPublicTelemetryLogs() ([]entity.TelemetryLog, error) {
-	var telemetryLogs []model.TelemetryLog
-	if err := tlr.dbc.Conn.Where("is_public = ?", "true").Find(&telemetryLogs).Error; err != nil {
-		return nil, fmt.Errorf("archive location can't find, %s", err.Error())
-	}
-
-	var result []entity.TelemetryLog
-	for _, v := range telemetryLogs {
-		result = append(result, entity.TelemetryLog{
-			StartTime:     v.StartTime,
-			EndTime:       v.EndTime,
-			LocationCount: v.LocationCount,
-		})
-	}
-	return result, nil
+func (tlr *telemetryLogRepository) ToggleTelemetryLogVisibility(id uint, visible bool) error {
+	return tlr.dbc.Conn.Model(&model.TelemetryLog{}).Where("id = ?", id).Update("is_public", visible).Error
 }

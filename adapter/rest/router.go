@@ -31,7 +31,7 @@ func InitRouter() (*echo.Echo, error) {
 		echoMiddleware.Recover(),
 		echoMiddleware.CORSWithConfig(echoMiddleware.CORSConfig{
 			AllowOrigins:     allowedOrigins,
-			AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodOptions},
+			AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPatch, http.MethodOptions},
 			AllowHeaders:     []string{"Content-Type", "Authorization"},
 			AllowCredentials: true,
 		}),
@@ -59,7 +59,8 @@ func InitRouter() (*echo.Echo, error) {
 
 	telemetryLogGroup := e.Group(rootPath+"/telemetry_log", restMiddleware.SessionMiddleware)
 	{
-		telemetryLogGroup.GET("", handler.NewTelemetryLogHandler(usecase.NewTelemetryLogUsecase(repository.NewTelemetryLogRepository(dbConn))).GetTelemetryLogs())
+		telemetryLogGroup.GET("", handler.NewTelemetryLogHandler(usecase.NewTelemetryLogUsecase(repository.NewTelemetryLogRepository(dbConn))).GetTelemetryLogs(), restMiddleware.CheckAuthorization)
+		telemetryLogGroup.PATCH("/visibility", handler.NewTelemetryLogHandler(usecase.NewTelemetryLogUsecase(repository.NewTelemetryLogRepository(dbConn))).ToggleTelemetryLogVisibility(), restMiddleware.PassOnlyAdminUser)
 	}
 
 	streamGroup := e.Group(rootPath + "/stream")

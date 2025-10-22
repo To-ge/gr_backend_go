@@ -6,4 +6,5 @@ type ITelemetryLogRepository interface {
 	CreateTelemetryLog(entity.TelemetryLog) error
 	GetTelemetryLogs() ([]entity.TelemetryLog, error)
 	GetPublicTelemetryLogs() ([]entity.TelemetryLog, error)
+	ToggleTelemetryLogVisibility(id uint, visible bool) error
 }
