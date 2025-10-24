@@ -14,10 +14,12 @@ type User struct {
 	IsAdmin  bool
 }
 
-func NewUser(name string, email string) *User {
+func NewUser(name string, email string, password string, isAdmin bool) *User {
 	return &User{
-		Name:  name,
-		Email: email,
+		Name:     name,
+		Email:    email,
+		Password: password,
+		IsAdmin:  isAdmin,
 	}
 }
 

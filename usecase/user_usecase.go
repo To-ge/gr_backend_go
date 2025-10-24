@@ -22,7 +22,7 @@ func NewUserUsecase(ur repository.IUserRepository) IUserUsecase {
 }
 
 func (uu *userUsecase) CreateUser(input *model.CreateUserInput) (*model.CreateUserOutput, error) {
-	user := entity.NewUser(input.Name, input.Email)
+	user := entity.NewUser(input.Name, input.Email, input.Password, input.IsAdmin)
 	if err := uu.repo.CreateUser(*user); err != nil {
 		return nil, err
 	}
